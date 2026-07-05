@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📑 Reports | Groundwater Predictor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body class="min-h-screen bg-cover bg-center p-8"
+      style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600&q=80&auto=format&fit=crop');">
+
+  <div class="bg-white/95 rounded-2xl shadow-2xl p-10 max-w-5xl mx-auto">
+    <h1 class="text-3xl font-bold text-blue-700 mb-6 flex items-center gap-2">
+      📑 Groundwater Report
+    </h1>
+
+    <!-- Summary -->
+    <div id="summary" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"></div>
+
+    <!-- Chart -->
+    <canvas id="reportChart" class="mb-8"></canvas>
+
+    <!-- Download Button -->
+    <div class="flex justify-between">
+      <a href="dashboard.html" 
+         class="px-6 py-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl shadow hover:opacity-90">
+         🔙 Back to Dashboard
+      </a>
+      <button onclick="downloadPDF()"
+              class="px-6 py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-xl shadow hover:opacity-90">
+        ⬇ Download PDF
+      </button>
+    </div>
+  </div>
+
+  <script>
+    let avgRainfall = 0, avgTemp = 0, avgGW = 0; // store for PDF
+    let chartInstance;
+
+    // Parse uploaded CSV from localStorage
+    const csvData = localStorage.getItem("uploadedCSV");
+    if (csvData) {
+      const rows = csvData.split("\n").map(r => r.split(","));
+      const headers = rows[0];
+      const data = rows.slice(1).filter(r => r.length === headers.length);
+
+      // Extract columns
+      const locations = data.map(r => r[0]);
+      const rainfall = data.map(r => parseFloat(r[2]));
+      const temp = data.map(r => parseFloat(r[3]));
+      const usage = data.map(r => parseFloat(r[4]));
+      const gwLevel = data.map(r => parseFloat(r[5]));
+
+      // Compute stats
+      avgRainfall = (rainfall.reduce((a,b)=>a+b,0)/rainfall.length).toFixed(1);
+      avgTemp = (temp.reduce((a,b)=>a+b,0)/temp.length).toFixed(1);
+      avgGW = (gwLevel.reduce((a,b)=>a+b,0)/gwLevel.length).toFixed(1);
+
+      // Summary cards
+      document.getElementById("summary").innerHTML = `
+        <div class="bg-blue-100 p-6 rounded-xl shadow text-center">
+          <h2 class="text-xl font-bold text-blue-700">🌧 Avg Rainfall</h2>
+          <p class="text-2xl">${avgRainfall} mm</p>
+        </div>
+        <div class="bg-yellow-100 p-6 rounded-xl shadow text-center">
+          <h2 class="text-xl font-bold text-yellow-700">🌡 Avg Temp</h2>
+          <p class="text-2xl">${avgTemp} °C</p>
+        </div>
+        <div class="bg-green-100 p-6 rounded-xl shadow text-center">
+          <h2 class="text-xl font-bold text-green-700">💧 Avg GW Level</h2>
+          <p class="text-2xl">${avgGW} mbgl</p>
+        </div>
+      `;
+
+      // Chart
+      chartInstance = new Chart(document.getElementById("reportChart"), {
+        type: "line",
+        data: {
+          labels: locations,
+          datasets: [
+            {
+              label: "Groundwater Level (mbgl)",
+              data: gwLevel,
+              borderColor: "rgba(37,99,235,1)",
+              backgroundColor: "rgba(37,99,235,0.2)",
+              fill: true,
+              tension: 0.3
+            },
+            {
+              label: "Rainfall (mm)",
+              data: rainfall,
+              borderColor: "rgba(16,185,129,1)",
+              backgroundColor: "rgba(16,185,129,0.2)",
+              fill: true,
+              tension: 0.3
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { position: "top" } }
+        }
+      });
+    }
+
+    // Download PDF function
+function downloadPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  // Title
+  doc.setFontSize(18);
+  doc.text("Groundwater Report", 20, 20);
+
+  // Subtitle
+  doc.setFontSize(12);
+  doc.text("This report contains summary insights generated from uploaded groundwater dataset.", 20, 30);
+
+  // Fetch summary values from page
+  const avgRainfall = document.querySelector("#summary div:nth-child(1) p").innerText;
+  const avgTemp = document.querySelector("#summary div:nth-child(2) p").innerText;
+  const avgGW = document.querySelector("#summary div:nth-child(3) p").innerText;
+
+  // Add summary text without unsupported symbols
+doc.text("Avg Rainfall: " + avgRainfall + " mm", 20, 50);
+doc.text("Avg Temperature: " + avgTemp + " deg C", 20, 60);
+doc.text("Avg GW Level: " + avgGW + " mbgl", 20, 70);
+
+  
+  // Capture chart
+  const chartCanvas = document.getElementById("reportChart");
+  const chartImage = chartCanvas.toDataURL("image/png", 1.0);
+
+  // Add chart image to PDF
+  doc.addImage(chartImage, "PNG", 20, 90, 170, 90);
+
+  // Save file
+  doc.save("Groundwater_Report.pdf");
+}
+
+  </script>
+
+</body>
+</html>

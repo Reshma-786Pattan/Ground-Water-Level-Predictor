@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regions Output | Groundwater Predictor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-cover bg-center flex items-center justify-center"
+      style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600&q=80&auto=format&fit=crop');">
+
+  <div class="bg-white/95 max-w-2xl rounded-2xl shadow-2xl p-8 text-center">
+    <h1 class="text-3xl font-bold text-green-700 mb-4">📊 Region Analysis</h1>
+    <img src="https://images.unsplash.com/photo-1473187983305-f615310e7daa?w=600&auto=format&fit=crop"
+         class="w-full h-48 object-cover rounded-xl mb-6 shadow-md" alt="Region groundwater">
+
+    <p id="regionSummary" class="text-lg text-gray-700 mb-6"></p>
+    <div id="predictionBox" class="text-2xl font-bold text-blue-700 mb-6"></div>
+
+    <div class="flex justify-between">
+      <a href="regions-input.html" 
+         class="px-6 py-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl shadow hover:opacity-90">
+         🔙 Back
+      </a>
+      <a href="dashboard.html" 
+         class="px-6 py-3 bg-gradient-to-r from-blue-600 to-green-500 text-white rounded-xl shadow hover:opacity-90">
+         🏠 Dashboard
+      </a>
+    </div>
+  </div>
+
+  <script>
+    const data = JSON.parse(localStorage.getItem("regionData"));
+    if(data){
+      let baseline = "Other Region";
+      if(data.location.includes("Delhi")) baseline = "Delhi";
+      else if(data.location.includes("Mumbai")) baseline = "Mumbai";
+      else if(data.location.includes("Chennai")) baseline = "Chennai";
+      else if(data.location.includes("Hyderabad")) baseline = "Hyderabad";
+      else if(data.location.includes("Bangalore")) baseline = "Bangalore";
+
+      const prediction = baseline !== "Other Region"
+        ? `Expected Groundwater Depth: ${(15 + Math.random()*5).toFixed(1)} m bgl`
+        : `Expected Groundwater Depth: ${(18 + Math.random()*6).toFixed(1)} m bgl`;
+
+      document.getElementById("regionSummary").innerText = 
+        `You selected ${baseline}. Coordinates: ${data.lat}, ${data.lon}`;
+      document.getElementById("predictionBox").innerText = prediction;
+    }
+  </script>
+</body>
+</html>

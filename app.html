@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Code Page</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #f5f7fa;
+    }
+
+    .container {
+      display: flex;
+      background: #000000;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      padding: 40px;
+      max-width: 900px;
+      width: 100%;
+      align-items: center;
+      gap: 40px;
+    }
+
+    .qr-section {
+      text-align: center;
+      flex: 1;
+    }
+
+    .qr-section img {
+      width: 200px;
+      height: 200px;
+      object-fit: contain;
+      margin-bottom: 20px;
+    }
+
+    .download-btn {
+      display: inline-block;
+      padding: 12px 20px;
+      font-size: 16px;
+      color: #fff;
+      background: #2563eb;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      text-decoration: none;
+    }
+
+    .download-btn:hover {
+      background: #1e40af;
+    }
+
+    .phone-section {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .phone-section img {
+      width: 150px;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        padding: 20px;
+      }
+
+      .phone-section {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .phone-section img {
+        width: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- QR Code Section -->
+    <div class="qr-section">
+      <img src="https://res.cloudinary.com/do2beu5mz/image/upload/v1757396881/Screenshot_2025-09-09_111730_hztizy.png ">
+      <br>
+      <a href="#" class="download-btn">Scan QRcode</a>
+    </div>
+
+    <!-- Phone Images Section -->
+    <div class="phone-section">
+      <img src="https://res.cloudinary.com/do2beu5mz/image/upload/v1757488550/Screenshot_2025-09-10_124228_pdnitn.png">
+      <img src="https://res.cloudinary.com/do2beu5mz/image/upload/v1757488632/Screenshot_2025-09-10_124645_rnqcpb.png">
+     
+   </div>
+  </div>
+
+</body>
+</html>

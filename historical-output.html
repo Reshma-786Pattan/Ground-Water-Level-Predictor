@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Historical Data Output | Groundwater Predictor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="min-h-screen bg-cover bg-center flex items-center justify-center p-8"
+      style="background-image: url('https://images.unsplash.com/photo-1529119368496-2dfda6ec2804?w=1600&q=80&auto=format&fit=crop');">
+
+  <div class="bg-white/95 rounded-2xl shadow-2xl p-10 max-w-4xl w-full">
+    <h1 class="text-3xl font-bold text-blue-700 mb-4">📊 Historical Data Results</h1>
+    <img src="https://images.unsplash.com/photo-1523731407965-2430cd12f5e4?w=600&q=80&auto=format&fit=crop"
+         class="w-full h-48 object-cover rounded-xl mb-6 shadow-md" alt="Water analysis">
+
+    <p id="summary" class="text-gray-700 mb-6 text-lg"></p>
+    <canvas id="historyChart" class="mb-6"></canvas>
+
+    <div class="flex justify-between">
+      <a href="historical-input.html" 
+         class="px-6 py-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl shadow hover:opacity-90">
+         🔙 Back
+      </a>
+      <a href="dashboard.html" 
+         class="px-6 py-3 bg-gradient-to-r from-blue-600 to-green-500 text-white rounded-xl shadow hover:opacity-90">
+         🏠 Dashboard
+      </a>
+    </div>
+  </div>
+
+  <script>
+    const data = JSON.parse(localStorage.getItem("historicalData"));
+
+    if(data?.type === "csv"){
+      const csv = localStorage.getItem("uploadedCSV");
+      const rows = csv.split("\n").map(r => r.split(","));
+      const labels = [];
+      const values = [];
+      
+      // Skip header row
+      for(let i=1;i<rows.length;i++){
+        if(rows[i].length >= 3){
+          labels.push(rows[i][1]); // Month-Year
+          values.push(parseFloat(rows[i][2])); // GW Level
+        }
+      }
+
+      document.getElementById("summary").innerText = 
+        `Showing uploaded historical groundwater data trends.`;
+
+      new Chart(document.getElementById("historyChart"), {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: "Groundwater Level (m bgl)",
+            data: values,
+            borderColor: "rgba(16, 185, 129, 1)",
+            backgroundColor: "rgba(16, 185, 129, 0.2)",
+            fill: true,
+            tension: 0.3
+          }]
+        }
+      });
+
+    } else if(data?.type === "manual") {
+      document.getElementById("summary").innerText = 
+        `Showing groundwater trends for ${data.location} over the past ${data.years} years.`;
+
+      // Fake data generator
+      const labels = [];
+      const values = [];
+      let baseline = Math.floor(Math.random()*10)+10;
+      for(let i=0;i<data.years;i++){
+        labels.push(`${2025 - i}`);
+        values.push(baseline + Math.floor(Math.random()*5 - 2));
+      }
+
+      new Chart(document.getElementById("historyChart"), {
+        type: "line",
+        data: {
+          labels: labels.reverse(),
+          datasets: [{
+            label: "Groundwater Level (m bgl)",
+            data: values.reverse(),
+            borderColor: "rgba(37, 99, 235, 1)",
+            backgroundColor: "rgba(37, 99, 235, 0.2)",
+            fill: true,
+            tension: 0.3
+          }]
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>

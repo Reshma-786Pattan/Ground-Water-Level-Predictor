@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regions Input | Groundwater Predictor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+<body class="min-h-screen bg-cover bg-center"
+      style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600&q=80&auto=format&fit=crop');">
+
+  <div class="bg-white/95 max-w-4xl mx-auto mt-10 rounded-2xl shadow-xl p-6">
+    <h1 class="text-3xl font-bold text-blue-700 mb-4">🌍 Select a Region</h1>
+    <p class="text-gray-600 mb-4">Click anywhere on the map to choose a location for groundwater analysis.</p>
+
+    <div id="map" class="w-full h-96 rounded-lg shadow-md mb-6"></div>
+
+    <form id="regionForm" class="space-y-4">
+      <input type="hidden" id="lat">
+      <input type="hidden" id="lon">
+      <div>
+        <label class="block text-gray-700 font-semibold">Selected Location</label>
+        <input type="text" id="location" readonly
+               class="w-full px-4 py-3 border rounded-lg shadow focus:ring-2 focus:ring-blue-400">
+      </div>
+      <button type="submit"
+              class="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-green-500 text-white font-semibold rounded-xl shadow-lg hover:opacity-90 transition">
+        Continue →
+      </button>
+    </form>
+  </div>
+
+  <script>
+    const map = L.map('map').setView([20.5937, 78.9629], 5); // India view
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    let marker;
+
+    map.on('click', function(e) {
+      const lat = e.latlng.lat.toFixed(4);
+      const lon = e.latlng.lng.toFixed(4);
+
+      if(marker) map.removeLayer(marker);
+      marker = L.marker([lat, lon]).addTo(map);
+
+      document.getElementById("lat").value = lat;
+      document.getElementById("lon").value = lon;
+      document.getElementById("location").value = `Lat: ${lat}, Lon: ${lon}`;
+    });
+
+    document.getElementById("regionForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const data = {
+        lat: document.getElementById("lat").value,
+        lon: document.getElementById("lon").value,
+        location: document.getElementById("location").value
+      };
+      localStorage.setItem("regionData", JSON.stringify(data));
+      window.location.href = "regions-output.html";
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload Data Output | Groundwater Predictor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="min-h-screen bg-cover bg-center p-8 flex items-center justify-center"
+      style="background-image: url('https://images.unsplash.com/photo-1523731407965-2430cd12f5e4?w=1600&q=80&auto=format&fit=crop');">
+
+  <div class="bg-white/95 rounded-2xl shadow-2xl p-10 max-w-5xl w-full">
+    <h1 class="text-3xl font-bold text-blue-700 mb-6">📊 Uploaded Data Results</h1>
+    <canvas id="csvChart" class="mb-8"></canvas>
+
+    <div id="tableContainer" class="overflow-x-auto mb-6"></div>
+
+    <div id="predictionBox" class="p-6 bg-gradient-to-r from-blue-500 to-green-500 text-white rounded-xl shadow-lg text-lg"></div>
+
+    <div class="flex justify-between mt-6">
+      <a href="upload-data.html" 
+         class="px-6 py-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl shadow hover:opacity-90">
+         🔙 Back
+      </a>
+      <a href="dashboard.html" 
+         class="px-6 py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-xl shadow hover:opacity-90">
+         🏠 Dashboard
+      </a>
+    </div>
+  </div>
+
+  <script>
+    function parseCSV(text) {
+      const rows = text.trim().split("\n").map(r => r.split(","));
+      const headers = rows.shift();
+      return { headers, rows };
+    }
+
+    const csvData = localStorage.getItem("uploadedCSV");
+
+    if (csvData) {
+      const { headers, rows } = parseCSV(csvData);
+
+      // Build Table
+      let tableHTML = "<table class='w-full border border-gray-300 rounded-lg overflow-hidden'>";
+      tableHTML += "<thead class='bg-blue-600 text-white'><tr>";
+      headers.forEach(h => tableHTML += `<th class='px-4 py-2'>${h}</th>`);
+      tableHTML += "</tr></thead><tbody>";
+      rows.forEach(r => {
+        tableHTML += "<tr class='border-t'>";
+        r.forEach(cell => tableHTML += `<td class='px-4 py-2'>${cell}</td>`);
+        tableHTML += "</tr>";
+      });
+      tableHTML += "</tbody></table>";
+      document.getElementById("tableContainer").innerHTML = tableHTML;
+
+      // Extract year & groundwater values
+      const years = rows.map(r => r[0]);
+      const levels = rows.map(r => parseFloat(r[2]));
+
+      // Prediction (simple average-based)
+      const avg = levels.reduce((a,b) => a+b, 0) / levels.length;
+      const nextPrediction = (levels[levels.length - 1] + avg) / 2;
+
+      document.getElementById("predictionBox").innerText =
+        `📢 Based on the uploaded data, the predicted groundwater level for the next year is ~ ${nextPrediction.toFixed(2)} m bgl.`;
+
+      // Chart
+      new Chart(document.getElementById("csvChart"), {
+        type: "line",
+        data: {
+          labels: years,
+          datasets: [{
+            label: "Groundwater Level (m bgl)",
+            data: levels,
+            borderColor: "rgba(37, 99, 235, 1)",
+            backgroundColor: "rgba(37, 99, 235, 0.2)",
+            fill: true,
+            tension: 0.3
+          }]
+        },
+        options: { responsive: true }
+      });
+    } else {
+      document.getElementById("predictionBox").innerText = "⚠️ No data uploaded.";
+    }
+  </script>
+
+</body>
+</html>

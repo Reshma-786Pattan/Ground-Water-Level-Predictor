@@ -1,0 +1,16 @@
+Location,Year,Rainfall(mm),Temperature(°C),Usage(m3/day),GroundwaterLevel(mbgl)
+Delhi,2020,850,27,1200,18
+Delhi,2021,910,28,1350,19
+Delhi,2022,780,29,1500,21
+Chennai,2020,1200,30,1800,22
+Chennai,2021,1320,31,2000,24
+Chennai,2022,1150,32,2100,26
+Mumbai,2020,2200,28,2500,12
+Mumbai,2021,2400,29,2700,13
+Mumbai,2022,2000,30,3000,15
+Hyderabad,2020,950,29,1600,20
+Hyderabad,2021,1020,30,1700,22
+Hyderabad,2022,880,31,1900,23
+Bangalore,2020,970,27,1400,17
+Bangalore,2021,1050,28,1550,18
+Bangalore,2022,890,29,1650,20

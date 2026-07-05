@@ -1,0 +1,81 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Historical Data Input | Groundwater Predictor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-cover bg-center" 
+      style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600&q=80&auto=format&fit=crop');">
+
+  <div class="bg-white/90 rounded-2xl shadow-2xl p-10 max-w-lg w-full text-center">
+    <h1 class="text-3xl font-bold text-blue-700 mb-4">📈 Historical Data</h1>
+    <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=600&q=80&auto=format&fit=crop"
+         class="w-full h-40 object-cover rounded-xl mb-6 shadow-md" alt="Historical groundwater">
+
+    <!-- Manual Form -->
+    <form id="historicalForm" class="space-y-6 mb-8">
+      <div>
+        <label class="block text-left text-gray-700 font-semibold">Location</label>
+        <input type="text" id="location" placeholder="Enter city or village"
+               class="w-full px-4 py-3 border rounded-lg shadow focus:ring-2 focus:ring-blue-400">
+      </div>
+
+      <div>
+        <label class="block text-left text-gray-700 font-semibold">Years of Data</label>
+        <input type="number" id="years" placeholder="e.g., 5" min="1"
+               class="w-full px-4 py-3 border rounded-lg shadow focus:ring-2 focus:ring-green-400">
+      </div>
+
+      <button type="submit" 
+              class="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-green-500 text-white font-semibold rounded-xl shadow-lg hover:opacity-90 transition">
+        Show Historical Trends
+      </button>
+    </form>
+
+    <!-- Upload CSV Option -->
+    <div class="border-t pt-6">
+      <p class="text-gray-700 mb-3 font-semibold">OR Upload Your CSV File</p>
+      <input type="file" id="csvFile" accept=".csv"
+             class="w-full px-4 py-3 border rounded-lg shadow focus:ring-2 focus:ring-purple-400 mb-4">
+      <button onclick="uploadCSV()" 
+              class="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold rounded-xl shadow-lg hover:opacity-90 transition">
+        Upload & Show Trends
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Manual Entry
+    document.getElementById("historicalForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const data = {
+        location: document.getElementById("location").value,
+        years: document.getElementById("years").value,
+        type: "manual"
+      };
+      localStorage.setItem("historicalData", JSON.stringify(data));
+      window.location.href = "historical-output.html";
+    });
+
+    // Upload CSV
+    function uploadCSV(){
+      const file = document.getElementById("csvFile").files[0];
+      if(file){
+        const reader = new FileReader();
+        reader.onload = function(e){
+          localStorage.setItem("uploadedCSV", e.target.result);
+          const data = { type: "csv" };
+          localStorage.setItem("historicalData", JSON.stringify(data));
+          window.location.href = "historical-output.html";
+        };
+        reader.readAsText(file);
+      } else {
+        alert("Please select a CSV file first!");
+      }
+    }
+  </script>
+
+</body>
+</html>

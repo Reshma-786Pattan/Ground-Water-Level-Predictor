@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ground Water Prediction Output</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-cover bg-center flex items-center justify-center"
+  style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&auto=format&fit=crop&q=60');">
+
+  <div class="bg-black/60 p-8 rounded-2xl shadow-2xl w-full max-w-3xl text-white">
+    <h1 class="text-3xl font-extrabold mb-6 text-center">📤 Prediction Result</h1>
+    <p id="predictionText" class="text-lg mb-4"></p>
+    <p id="advisoryText" class="font-semibold mb-6"></p>
+    <div class="text-center">
+      <a href="predict-input.html" 
+        class="px-6 py-3 bg-blue-600 rounded-xl hover:bg-blue-700 shadow-lg">🔄 Predict Again</a>
+    </div>
+<!-- Back to Home Button -->
+<div class="mt-6 text-center">
+  <a href="dashboard.html" 
+     class="px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition">
+     ⬅ Back to Home
+  </a>
+</div>
+
+  </div>
+
+  <script>
+    const data = JSON.parse(localStorage.getItem("predictionInput"));
+    if (data) {
+      let location = data.location.toLowerCase();
+      let rainfall = parseFloat(data.rainfall) || 0;
+      let temperature = parseFloat(data.temperature) || 0;
+      let usage = parseFloat(data.usage) || 0;
+
+      // Baseline by location
+      let baseLevel = 20;
+      if (location.includes("delhi")) baseLevel = 30;
+      else if (location.includes("chennai")) baseLevel = 15;
+      else if (location.includes("mumbai")) baseLevel = 12;
+      else if (location.includes("hyderabad")) baseLevel = 22;
+      else if (location.includes("bangalore") || location.includes("bengaluru")) baseLevel = 18;
+
+      // Prediction formula
+      let predicted = (baseLevel + (rainfall / 25) - (temperature / 6) - (usage / 300)).toFixed(1);
+
+      // Output
+      document.getElementById("predictionText").innerText = 
+        `📍 Location: ${data.location}\n💧 Predicted Water Table Depth: ${predicted} meters below ground level (mbgl).`;
+
+      let advisory = "✅ Stable water availability expected.";
+      if (predicted > 25) advisory = "⚠ Warning: Possible scarcity, reduce pumping!";
+      if (predicted < 10) advisory = "💧 Healthy recharge levels, water availability is good.";
+      document.getElementById("advisoryText").innerText = advisory;
+    } else {
+      document.getElementById("predictionText").innerText = "No input data found.";
+    }
+  </script>
+</body>
+</html>
